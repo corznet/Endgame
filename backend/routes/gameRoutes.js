@@ -3,13 +3,15 @@ const router = express.Router();
 const {getGames,setGame,updateGame,deleteGame} = require('../controllers/gameController')
 
 
-router.get('/',getGames)
+const {protect} = require('../middleware/authMiddleware')
 
-router.post('/',setGame)
+router.get('/',protect,getGames)
 
-router.put('/:id',updateGame)
+router.post('/',protect,setGame)
 
-router.delete('/:id',deleteGame)
+router.put('/:id',protect,updateGame)
+
+router.delete('/:id',protect,deleteGame)
 
 
 module.exports = router
