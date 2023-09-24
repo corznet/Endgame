@@ -1,11 +1,15 @@
 const asyncHandler = require('express-async-handler')
 
+const Game = require('../models/gameModel')
+
 
 // get games
 //@route GET /api/games
 //acess private
 const getGames = asyncHandler(async (req,res) => {
-    res.status(200).json({message: 'Get goals'})
+
+    const games = await Game.find()
+    res.status(200).json(games)
 })
 
 // Set games
@@ -18,23 +22,44 @@ const setGame = asyncHandler(async (req,res) => {
         throw new Error('Please add a text field')
     }
 
+    const game = await Game.create({
+        text: req.body.text,
+    })
+
 
     console.log(req.body)
-    res.status(200).json({message: 'Create game'})
+    res.status(200).json(game)
 })
 
-// get games
-//@route GET /api/goals
+// update games
+//@route PUT /api/goals
 //acess private
 const updateGame = asyncHandler(async (req,res) => {
-    res.status(200).json({message: `Update games ${req.params.id}`})
+    const game = await Game.findById(req.params.id)
+    if(!game){
+        res.status(400)
+        throw new Error('Game not found')
+    }
+    const updatedGame = await Game.findByIdAndUpdate(req.params.id,req.body,{
+        new: true,
+    })
+
+    res.status(200).json(updatedGame)
 })
 
 // Delete game
 //@route DELETE /api/goals
 //acess private
 const deleteGame = asyncHandler(async (req,res) => {
-    res.status(200).json({message: `Delete games ${req.params.id}`})
+    const game = await Game.findById(req.params.id)
+    if(!game){
+        res.status(400)
+        throw new Error('Game not found')
+    }
+    await game.deleteOne()
+
+
+    res.status(200).json({id: req.params.id})
 })
 
 module.exports = {
